@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UAE Instant Pay</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230b7a5c'/><text x='16' y='21' font-size='11' font-weight='700' text-anchor='middle' fill='white' font-family='sans-serif'>AED</text></svg>" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header>
+    <h1>Instant<span>Pay</span> <small class="muted">UAE simulator</small></h1>
+    <div id="whoami"></div>
+  </header>
+
+  <main>
+    <section id="auth-view" class="card narrow" hidden>
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-auth="login">Log in</button>
+        <button class="tab" data-auth="register">Register</button>
+      </div>
+      <form id="auth-form">
+        <label data-only="register">Full name <input name="name" autocomplete="name" /></label>
+        <label>UAE mobile number <input name="mobile" inputmode="tel" placeholder="050 123 4567" required /></label>
+        <label data-only="register">Emirates ID (optional) <input name="emiratesId" placeholder="784-YYYY-NNNNNNN-C" /></label>
+        <label>Password <input name="password" type="password" minlength="8" required /></label>
+        <button class="primary" type="submit">Continue</button>
+      </form>
+    </section>
+
+    <section id="app-view" hidden>
+      <nav class="tabs" role="tablist">
+        <button class="tab active" data-view="home">Home</button>
+        <button class="tab" data-view="send">Send</button>
+        <button class="tab" data-view="receive">Receive</button>
+        <button class="tab" data-view="requests">Requests <span id="req-badge" class="badge" hidden></span></button>
+        <button class="tab" data-view="history">History</button>
+      </nav>
+
+      <div data-panel="home">
+        <div class="card" id="passcode-card" hidden>
+          <h2>Set your payment passcode</h2>
+          <p class="muted">A 6-digit passcode authorises every payment.</p>
+          <div class="row end"><button class="primary" id="set-passcode">Set passcode</button></div>
+        </div>
+        <div class="card">
+          <h2>Accounts</h2>
+          <ul id="accounts" class="list"></ul>
+          <form id="open-form" class="row">
+            <select name="bankCode" id="bank-select"></select>
+            <button type="submit">Open account</button>
+          </form>
+        </div>
+        <div class="card">
+          <h2>Receive with your mobile number or email</h2>
+          <p class="muted">People can pay you using these. Each one routes to the account you choose.</p>
+          <ul id="proxies" class="list"></ul>
+          <form id="proxy-form" class="row">
+            <input name="value" type="email" placeholder="you@example.com" required />
+            <select name="accountId" class="my-accounts"></select>
+            <button type="submit">Add email</button>
+          </form>
+        </div>
+        <div class="card">
+          <div class="row" style="justify-content:space-between"><h2 style="margin:0">Security</h2><button class="small" id="change-passcode">Change passcode</button></div>
+        </div>
+      </div>
+
+      <div data-panel="send" hidden>
+        <div class="card">
+          <h2>Send money</h2>
+          <form id="send-form">
+            <label>From <select name="fromAccountId" class="my-accounts"></select></label>
+            <label>To (mobile, email or IBAN) <input name="to" placeholder="050 123 4567 · name@mail.com · AE.." required /></label>
+            <p id="recipient-info" class="muted"></p>
+            <label>Amount (AED) <input name="amount" inputmode="decimal" placeholder="0.00" required /></label>
+            <label>Note <input name="note" maxlength="140" /></label>
+            <button class="primary" type="submit">Send</button>
+          </form>
+        </div>
+        <div class="card">
+          <h2>Pay a QR code</h2>
+          <form id="scan-form" class="row">
+            <input name="payload" placeholder="Paste QR payload (000201...)" required />
+            <button type="submit">Read</button>
+          </form>
+        </div>
+      </div>
+
+      <div data-panel="receive" hidden>
+        <div class="card">
+          <h2>My QR code</h2>
+          <form id="qr-form">
+            <label>Into account <select name="accountId" class="my-accounts"></select></label>
+            <label>Amount (optional) <input name="amount" inputmode="decimal" /></label>
+            <label>Note (optional) <input name="note" maxlength="50" /></label>
+            <button type="submit">Generate QR</button>
+          </form>
+          <div id="qr-out" class="qr"></div>
+        </div>
+        <div class="card">
+          <h2>Request money</h2>
+          <form id="request-form">
+            <label>From (mobile or email) <input name="from" required /></label>
+            <label>Amount (AED) <input name="amount" inputmode="decimal" required /></label>
+            <label>Note <input name="note" maxlength="140" /></label>
+            <label>Into account <select name="toAccountId" class="my-accounts"></select></label>
+            <button class="primary" type="submit">Send request</button>
+          </form>
+        </div>
+        <div class="card">
+          <h2>Split a bill</h2>
+          <form id="split-form">
+            <label>Total (AED) <input name="total" inputmode="decimal" required /></label>
+            <label>Note <input name="note" maxlength="140" placeholder="Dinner at ..." /></label>
+            <label class="check"><input type="checkbox" name="includeSelf" checked /> Include me in the split</label>
+            <p class="muted" style="margin:6px 0">Split with (mobile or email):</p>
+            <div id="split-people"></div>
+            <div class="row" style="justify-content:space-between">
+              <button type="button" class="small" id="add-person">+ Add person</button>
+              <span id="split-preview" class="muted"></span>
+            </div>
+            <div class="row end"><button class="primary" type="submit">Send split requests</button></div>
+          </form>
+        </div>
+      </div>
+
+      <div data-panel="requests" hidden>
+        <div class="card"><h2>Requests to pay</h2><ul id="incoming" class="list"></ul></div>
+        <div class="card"><h2>Split bills</h2><ul id="splits" class="list"></ul></div>
+        <div class="card"><h2>Requests I sent</h2><ul id="outgoing" class="list"></ul></div>
+      </div>
+
+      <div data-panel="history" hidden>
+        <div class="card"><h2>Transactions</h2><ul id="history" class="list"></ul></div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="pin-dialog">
+    <form method="dialog" id="pin-form">
+      <h3 id="pin-title">Enter passcode</h3>
+      <p id="pin-subtitle" class="muted"></p>
+      <input id="pin-input" type="password" inputmode="numeric" maxlength="6" autocomplete="off" required />
+      <div class="row end">
+        <button value="cancel" formnovalidate>Cancel</button>
+        <button value="ok" class="primary">Confirm</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" role="status" hidden></div>
+  <script src="/app.js" type="module"></script>
+</body>
+</html>

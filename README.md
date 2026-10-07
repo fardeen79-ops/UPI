@@ -3,6 +3,9 @@
 A self-contained, UPI-style payment system: virtual payment addresses (`name@oksbi`), UPI PIN, instant
 push payments, collect (request-money) flows, `upi://` QR codes and transaction history, with a web UI.
 
+> Looking for the UAE version (Aani-style: mobile/email/IBAN proxies, AED, request-to-pay, split bills)?
+> See [`uae/`](uae/README.md).
+
 > **Simulation only.** No real money moves and nothing connects to NPCI or any bank. Linking an account opens
 > a simulated bank account with a demo balance (₹10,000 by default).
 
