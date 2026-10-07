@@ -1,0 +1,42 @@
+{
+  "name": "upi-sim",
+  "version": "0.1.0",
+  "description": "A simulated UPI-style payment system: VPAs, UPI PIN, push payments, collect requests and QR codes",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/server.js",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fardeen79-ops/UPI.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fardeen79-ops/UPI/issues"
+  },
+  "homepage": "https://github.com/fardeen79-ops/UPI#readme",
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "qrcode": "^1.5.4",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^26.6.4",
+    "@types/qrcode": "^1.5.6",
+    "@types/supertest": "^7.2.1",
+    "supertest": "^7.3.1",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  },
+  "type": "module"
+}

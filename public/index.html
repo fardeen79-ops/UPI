@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UPI Simulator</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234b3fd8'/><text x='16' y='22' font-size='16' text-anchor='middle' fill='white' font-family='sans-serif'>₹</text></svg>" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header>
+    <h1>UPI<span>sim</span></h1>
+    <div id="whoami"></div>
+  </header>
+
+  <main>
+    <!-- Auth -->
+    <section id="auth-view" class="card narrow" hidden>
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-auth="login">Log in</button>
+        <button class="tab" data-auth="register">Register</button>
+      </div>
+      <form id="auth-form">
+        <label data-only="register">Full name <input name="name" autocomplete="name" /></label>
+        <label>Mobile number <input name="phone" inputmode="numeric" maxlength="10" placeholder="98xxxxxxxx" required /></label>
+        <label>Password <input name="password" type="password" minlength="8" required /></label>
+        <button class="primary" type="submit">Continue</button>
+      </form>
+    </section>
+
+    <!-- App -->
+    <section id="app-view" hidden>
+      <nav class="tabs" role="tablist">
+        <button class="tab active" data-view="home">Home</button>
+        <button class="tab" data-view="send">Send</button>
+        <button class="tab" data-view="receive">Receive</button>
+        <button class="tab" data-view="requests">Requests <span id="req-badge" class="badge" hidden></span></button>
+        <button class="tab" data-view="history">History</button>
+      </nav>
+
+      <div data-panel="home">
+        <div class="card">
+          <h2>Bank accounts</h2>
+          <ul id="accounts" class="list"></ul>
+          <form id="link-form" class="row">
+            <select name="bankCode" id="bank-select"></select>
+            <button type="submit">Link account</button>
+          </form>
+        </div>
+        <div class="card">
+          <h2>UPI IDs</h2>
+          <ul id="vpas" class="list"></ul>
+          <form id="vpa-form" class="row">
+            <input name="username" placeholder="username" required />
+            <select name="accountId" id="vpa-account-select"></select>
+            <button type="submit">Create UPI ID</button>
+          </form>
+        </div>
+      </div>
+
+      <div data-panel="send" hidden>
+        <div class="card">
+          <h2>Pay a UPI ID</h2>
+          <form id="pay-form">
+            <label>From <select name="fromVpa" class="my-vpas"></select></label>
+            <label>To UPI ID <input name="toVpa" placeholder="name@okbank" required /></label>
+            <p id="payee-name" class="muted"></p>
+            <label>Amount (₹) <input name="amount" inputmode="decimal" placeholder="0.00" required /></label>
+            <label>Note <input name="note" maxlength="80" /></label>
+            <button class="primary" type="submit">Pay</button>
+          </form>
+        </div>
+        <div class="card">
+          <h2>Pay from a UPI link / QR text</h2>
+          <form id="scan-form" class="row">
+            <input name="uri" placeholder="upi://pay?pa=..." required />
+            <button type="submit">Read</button>
+          </form>
+        </div>
+      </div>
+
+      <div data-panel="receive" hidden>
+        <div class="card">
+          <h2>Receive with QR</h2>
+          <form id="qr-form">
+            <label>UPI ID <select name="vpa" class="my-vpas"></select></label>
+            <label>Amount (optional) <input name="amount" inputmode="decimal" /></label>
+            <label>Note (optional) <input name="note" maxlength="80" /></label>
+            <button type="submit">Generate QR</button>
+          </form>
+          <div id="qr-out" class="qr"></div>
+        </div>
+        <div class="card">
+          <h2>Request money</h2>
+          <form id="collect-form">
+            <label>To my UPI ID <select name="payeeVpa" class="my-vpas"></select></label>
+            <label>From UPI ID <input name="payerVpa" placeholder="name@okbank" required /></label>
+            <label>Amount (₹) <input name="amount" inputmode="decimal" required /></label>
+            <label>Note <input name="note" maxlength="80" /></label>
+            <button class="primary" type="submit">Send request</button>
+          </form>
+        </div>
+      </div>
+
+      <div data-panel="requests" hidden>
+        <div class="card">
+          <h2>Requests to pay</h2>
+          <ul id="incoming" class="list"></ul>
+        </div>
+        <div class="card">
+          <h2>Requests I sent</h2>
+          <ul id="outgoing" class="list"></ul>
+        </div>
+      </div>
+
+      <div data-panel="history" hidden>
+        <div class="card">
+          <h2>Transactions</h2>
+          <ul id="history" class="list"></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="pin-dialog">
+    <form method="dialog" id="pin-form">
+      <h3 id="pin-title">Enter UPI PIN</h3>
+      <p id="pin-subtitle" class="muted"></p>
+      <input id="pin-input" type="password" inputmode="numeric" maxlength="6" autocomplete="off" required />
+      <div class="row end">
+        <button value="cancel" formnovalidate>Cancel</button>
+        <button value="ok" class="primary">Confirm</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" role="status" hidden></div>
+  <script src="/app.js" type="module"></script>
+</body>
+</html>
